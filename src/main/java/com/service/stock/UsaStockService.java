@@ -53,8 +53,14 @@ public class UsaStockService {
     public CrawlerApiResponseBean crawlUsaTradeLog() {
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
         try {
-            List<String> list = ioService.getDataFromFile("C:\\Users\\hcw\\Desktop\\tempStock\\temp.txt");
-            List<UsaTradeLog> reqList = listObjectTool.getUsaTradeLogList(list);
+//            List<String> list = ioService.getDataFromFile("C:\\Users\\hcw\\Desktop\\tempStock\\temp.txt");
+//            List<UsaTradeLog> reqList = listObjectTool.getUsaTradeLogList(list);
+//            DatabaseApiResponseBean repBean = postService.databaseApi("create_usa_stock_trade_log", reqList);
+//            if (repBean.getSuccess()) {
+//                responseBean = objectTool.getSuccessRep();
+//                responseBean.setResult("success");
+//            }
+            List<UsaTradeLog> reqList = listObjectTool.getUsaTradeLogList("C:\\Users\\hcw\\Desktop\\證券\\TD\\trade.xlsx", 0);
             DatabaseApiResponseBean repBean = postService.databaseApi("create_usa_stock_trade_log", reqList);
             if (repBean.getSuccess()) {
                 responseBean = objectTool.getSuccessRep();

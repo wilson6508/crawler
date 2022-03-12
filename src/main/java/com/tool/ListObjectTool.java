@@ -12,6 +12,9 @@ import com.pojo.prop.PropertiesBean;
 import com.service.fetch.GetService;
 import com.service.fetch.IoService;
 import com.service.fetch.PostService;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,6 +22,7 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,6 +140,36 @@ public class ListObjectTool {
             repList.add(usaTradeLog);
         }
         return repList;
+    }
+
+    public List<UsaTradeLog> getUsaTradeLogList(String excelPath, int sheetPage) {
+        List<UsaTradeLog> result = new ArrayList<>();
+        try {
+            XSSFWorkbook book = new XSSFWorkbook(excelPath);
+            XSSFSheet sheet = book.getSheetAt(sheetPage);
+            int rows = sheet.getLastRowNum() + 1;
+            for (int row = 0; row < rows; row ++) {
+                UsaTradeLog usaTradeLog = new UsaTradeLog();
+                XSSFRow xssfRow = sheet.getRow(row);
+
+                String[] temp = xssfRow.getCell(0).toString().split("/");
+                String tradeDate = temp[2] + "-" + temp[0] + "-" + temp[1];
+                String boughtSold = xssfRow.getCell(1).toString();
+                double tempQty = Double.parseDouble(xssfRow.getCell(3).toString());
+                int qty = (int) Math.round(tempQty);
+                double amount = Double.parseDouble(xssfRow.getCell(4).toString());
+
+                usaTradeLog.setTradeDate(tradeDate);
+                usaTradeLog.setStockId(xssfRow.getCell(2).toString());
+                usaTradeLog.setQuantity(boughtSold.equals("Sold") ? -qty : qty);
+                usaTradeLog.setAmount(boughtSold.equals("Sold") ? amount : -amount);
+                result.add(usaTradeLog);
+            }
+            book.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public List<NbaGame> getNbaGames(List<String> list) {
