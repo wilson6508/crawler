@@ -17,9 +17,16 @@ public class SportController {
     private SportService sportService;
 
     @RequestMapping(value = "/crawlMainSpreads", method = {RequestMethod.POST, RequestMethod.GET})
-    public String createInfo(HttpServletRequest request) {
+    public String crawlMainSpreads(HttpServletRequest request) {
         Object parameter = request.getAttribute("request");
         CrawlerApiResponseBean responseDTO = sportService.crawlMainSpreads(parameter);
+        request.setAttribute("response", responseDTO);
+        return "forward:/crawlerApiResponse";
+    }
+
+    @RequestMapping(value = "/crawlVueData", method = {RequestMethod.POST, RequestMethod.GET})
+    public String crawlVueData(HttpServletRequest request) {
+        CrawlerApiResponseBean responseDTO = sportService.crawlVueData();
         request.setAttribute("response", responseDTO);
         return "forward:/crawlerApiResponse";
     }

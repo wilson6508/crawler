@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -53,6 +54,19 @@ public class StringTool {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public String getSportDate(boolean boo) {
+        LocalDate target = new LocalDate().plusDays(boo ? 1 : 0);
+        HashMap<Integer, String> hashMap = new HashMap<>();
+        hashMap.put(1, " (一)");
+        hashMap.put(2, " (二)");
+        hashMap.put(3, " (三)");
+        hashMap.put(4, " (四)");
+        hashMap.put(5, " (五)");
+        hashMap.put(6, " (六)");
+        hashMap.put(7, " (七)");
+        return target.toString().substring(5).replace("-", "/") + hashMap.get(target.getDayOfWeek());
     }
 
 }

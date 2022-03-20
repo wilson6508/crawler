@@ -16,7 +16,7 @@ public class InsertTask {
     private UsaStockService usaStockService;
 
     // 星期二到星期六20:55執行
-    @Scheduled(cron = "30 22 17 * * TUE-SAT")
+    // @Scheduled(cron = "30 22 17 * * TUE-SAT")
     public void dailyTask() {
         List<String> stockIdList = Arrays.asList("SPY", "QQQ");
         CrawlerApiResponseBean responseBean = usaStockService.crawlUsaPrice(stockIdList);
@@ -28,7 +28,7 @@ public class InsertTask {
     }
 
     // 每個月1號20:30執行
-    @Scheduled(cron = "0 30 20 1 * *")
+    // @Scheduled(cron = "0 30 20 1 * *")
     public void monthlyTask() {
         System.out.println("QQQ");
     }
