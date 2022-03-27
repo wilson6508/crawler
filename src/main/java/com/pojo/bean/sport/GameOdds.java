@@ -1,7 +1,6 @@
-package com.pojo.info;
+package com.pojo.bean.sport;
 
 public class GameOdds {
-
     private String match;
     private String name;
     private String optionName;

@@ -1,7 +1,7 @@
 package com.controller;
 
 import com.pojo.dto.CrawlerApiResponseBean;
-import com.service.sport.SportService;
+import com.service.test.TestOneService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,23 +10,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping("/sport")
-public class SportController {
+public class TestController {
 
     @Autowired
-    private SportService sportService;
+    private TestOneService testOneService;
 
-    @RequestMapping("/{action}")
-    public String sport(@PathVariable("action") String action, HttpServletRequest request) {
+    @RequestMapping("/test/{action}")
+    public String test(@PathVariable("action") String action, HttpServletRequest request) {
         Object parameter = request.getAttribute("parameter");
         CrawlerApiResponseBean responseDTO = null;
         switch (action) {
-            case "crawlOdds": {
-                responseDTO = sportService.crawlOdds();
-                break;
-            }
-            case "crawlSpreads": {
-                responseDTO = sportService.crawlSpreads(parameter);
+            case "testOne": {
+                responseDTO = testOneService.testOne(parameter);
                 break;
             }
         }

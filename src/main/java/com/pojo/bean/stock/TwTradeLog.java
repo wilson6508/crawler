@@ -1,4 +1,4 @@
-package com.pojo.info;
+package com.pojo.bean.stock;
 
 public class TwTradeLog {
     private String tradeDate;

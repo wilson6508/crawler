@@ -1,6 +1,6 @@
-package com.pojo.info;
+package com.pojo.bean.stock;
 
-public class UsaStockPrice {
+public class UsaPrice {
     private String date;
     private String stockId;
     private double open;

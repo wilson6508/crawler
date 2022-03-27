@@ -1,7 +1,6 @@
-package com.pojo.info;
+package com.pojo.bean.sport;
 
-public class NbaGame {
-
+public class NbaBean {
     private String guest;
     private String host;
     private String greenGuest;

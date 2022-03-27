@@ -4,6 +4,7 @@ import com.pojo.prop.PropertiesBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
