@@ -94,28 +94,28 @@ public class ListObjectTool {
         return repList;
     }
 
-    public List<UsaStockPrice> getUsaStockPriceList(String stockId) {
-        String url = String.format(propertiesBean.getChartsUrl(), stockId, "price");
-        String rawData = getService.fakeExplorer(url);
-        Document document = Jsoup.parse(rawData);
-        Element tbody = document.getElementsByTag("tbody").get(0);
-        Elements trs = tbody.getElementsByTag("tr");
-        List<UsaStockPrice> repList = new ArrayList<>();
-        for (Element tr : trs) {
-            UsaStockPrice usaStockPrice = new UsaStockPrice();
-            Elements tds = tr.getElementsByTag("td");
-            String date = tds.get(0).text();
-            usaStockPrice.setDate(localDateTool.getObjByString(date).toString());
-            usaStockPrice.setStockId(stockId);
-            usaStockPrice.setOpen(Double.parseDouble(tds.get(1).text()));
-            usaStockPrice.setHigh(Double.parseDouble(tds.get(2).text()));
-            usaStockPrice.setLow(Double.parseDouble(tds.get(3).text()));
-            usaStockPrice.setClose(Double.parseDouble(tds.get(4).text()));
-            usaStockPrice.setVolume(tds.get(5).text());
-            repList.add(usaStockPrice);
-        }
-        return repList;
-    }
+//    public List<UsaStockPrice> getUsaStockPriceList(String stockId) {
+//        String url = String.format(propertiesBean.getChartsUrl(), stockId, "price");
+//        String rawData = getService.fakeExplorer(url);
+//        Document document = Jsoup.parse(rawData);
+//        Element tbody = document.getElementsByTag("tbody").get(0);
+//        Elements trs = tbody.getElementsByTag("tr");
+//        List<UsaStockPrice> repList = new ArrayList<>();
+//        for (Element tr : trs) {
+//            UsaStockPrice usaStockPrice = new UsaStockPrice();
+//            Elements tds = tr.getElementsByTag("td");
+//            String date = tds.get(0).text();
+//            usaStockPrice.setDate(localDateTool.getObjByString(date).toString());
+//            usaStockPrice.setStockId(stockId);
+//            usaStockPrice.setOpen(Double.parseDouble(tds.get(1).text()));
+//            usaStockPrice.setHigh(Double.parseDouble(tds.get(2).text()));
+//            usaStockPrice.setLow(Double.parseDouble(tds.get(3).text()));
+//            usaStockPrice.setClose(Double.parseDouble(tds.get(4).text()));
+//            usaStockPrice.setVolume(tds.get(5).text());
+//            repList.add(usaStockPrice);
+//        }
+//        return repList;
+//    }
 
     public List<UsaTradeLog> getUsaTradeLogList(List<String> list) {
         List<UsaTradeLog> repList = new ArrayList<>();

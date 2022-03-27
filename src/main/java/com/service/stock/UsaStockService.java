@@ -6,10 +6,17 @@ import com.pojo.dto.CrawlerApiResponseBean;
 import com.pojo.dto.DatabaseApiResponseBean;
 import com.pojo.info.UsaStockPrice;
 import com.pojo.info.UsaTradeLog;
-import com.service.fetch.IoService;
+import com.pojo.prop.PropertiesBean;
+import com.service.fetch.GetService;
 import com.service.fetch.PostService;
 import com.tool.ListObjectTool;
+import com.tool.LocalDateTool;
 import com.tool.ObjectTool;
+import org.joda.time.LocalDate;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,26 +31,50 @@ public class UsaStockService {
     @Autowired
     private ObjectTool objectTool;
     @Autowired
-    private ListObjectTool listObjectTool;
+    private LocalDateTool localDateTool;
     @Autowired
-    private IoService ioService;
+    private PropertiesBean propertiesBean;
+    @Autowired
+    private GetService getService;
+    @Autowired
+    private ListObjectTool listObjectTool;
     @Autowired
     private PostService postService;
 
     public CrawlerApiResponseBean crawlUsaPrice(Object parameter) {
+
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
+        List<UsaStockPrice> list = new ArrayList<>();
+        Type type = new TypeToken<ArrayList<String>>() {}.getType();
+        List<String> stockIdList = gson.fromJson(gson.toJson(parameter), type);
+
         try {
-            Type type = new TypeToken<ArrayList<String>>() {}.getType();
-            List<String> stockIdList = gson.fromJson(gson.toJson(parameter), type);
-            List<UsaStockPrice> list = new ArrayList<>();
             for (String stockId : stockIdList) {
-                list.addAll(listObjectTool.getUsaStockPriceList(stockId));
+                String url = String.format(propertiesBean.getChartsUrl(), stockId, "price");
+                String rawData = getService.fakeExplorer(url);
+                Document document = Jsoup.parse(rawData);
+                Element tbody = document.getElementsByTag("tbody").get(0);
+                Elements trs = tbody.getElementsByTag("tr");
+                Element tr = trs.get(0);
+                Elements tds = tr.getElementsByTag("td");
+
+                String originDate = tds.get(0).text();
+                String date = localDateTool.getObjByString(originDate).toString();
+                String yesterday = new LocalDate().plusDays(-1).toString();
+                if (date.equals(yesterday)) {
+                    UsaStockPrice usaStockPrice = new UsaStockPrice();
+                    usaStockPrice.setDate(date);
+                    usaStockPrice.setStockId(stockId);
+                    usaStockPrice.setOpen(Double.parseDouble(tds.get(1).text()));
+                    usaStockPrice.setHigh(Double.parseDouble(tds.get(2).text()));
+                    usaStockPrice.setLow(Double.parseDouble(tds.get(3).text()));
+                    usaStockPrice.setClose(Double.parseDouble(tds.get(4).text()));
+                    usaStockPrice.setVolume(tds.get(5).text());
+                    list.add(usaStockPrice);
+                }
             }
-            DatabaseApiResponseBean databaseApiResponseBean = postService.databaseApi("create_usa_stock_price_log", list);
-            if (databaseApiResponseBean.getSuccess()) {
-                responseBean = objectTool.getSuccessRep();
-                responseBean.setResult("success");
-            }
+            responseBean = objectTool.getSuccessRep();
+            responseBean.setResult(list);
         } catch (Exception e) {
             e.printStackTrace();
         }

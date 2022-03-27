@@ -1,5 +1,6 @@
 package com.tool;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,9 +9,11 @@ import org.jsoup.select.Elements;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import static java.util.stream.Collectors.toList;
 
@@ -67,6 +70,36 @@ public class StringTool {
         hashMap.put(6, " (六)");
         hashMap.put(7, " (七)");
         return target.toString().substring(5).replace("-", "/") + hashMap.get(target.getDayOfWeek());
+    }
+
+    public String getCurrentTime(String type) {
+        String current = "";
+        LocalDate localDate = new LocalDate();
+        DateTime dateTime = new DateTime();
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        switch (type) {
+            case "date": {
+                current = localDate.toString(); // 2022-03-22
+                break;
+            }
+            case "time": {
+                current = timestamp.toString().substring(0, 19); // 2022-03-22 13:56:56
+                break;
+            }
+            case "dayTw": {
+                current = localDate + " " + dateTime.dayOfWeek().getAsText(); // 2022-03-22 星期二
+                break;
+            }
+            case "dayUsShort": {
+                current = localDate + " " + dateTime.dayOfWeek().getAsShortText(Locale.US); // 2022-03-22 Tue
+                break;
+            }
+            case "dayUsLong": {
+                current = localDate + " " + dateTime.dayOfWeek().getAsText(Locale.US); // 2022-03-22 Tuesday
+                break;
+            }
+        }
+        return current;
     }
 
 }
