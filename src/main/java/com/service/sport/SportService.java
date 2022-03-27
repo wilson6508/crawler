@@ -1,18 +1,21 @@
 package com.service.sport;
 
 import com.google.gson.Gson;
+import com.pojo.bean.sport.GameOdds;
+import com.pojo.bean.sport.NbaBean;
 import com.pojo.dto.CrawlerApiResponseBean;
-import com.pojo.info.GameOdds;
-import com.pojo.info.NbaGame;
-import com.pojo.prop.PropertiesBean;
 import com.service.fetch.GetService;
 import com.tool.EnumTool;
-import com.tool.ListObjectTool;
 import com.tool.ObjectTool;
-import com.tool.StringTool;
+import org.joda.time.LocalDate;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -23,67 +26,14 @@ import static java.util.stream.Collectors.toList;
 @Service
 public class SportService {
 
-    private final Gson gson = new Gson();
     @Autowired
-    private EnumTool enumTool;
-    @Autowired
-    private ListObjectTool listObjectTool;
+    private Gson gson = new Gson();
     @Autowired
     private ObjectTool objectTool;
     @Autowired
-    private StringTool stringTool;
-    @Autowired
     private GetService getService;
     @Autowired
-    private PropertiesBean propertiesBean;
-
-    public CrawlerApiResponseBean createInfo(Object parameter) {
-        CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
-        try {
-            responseBean = objectTool.getSuccessRep();
-            String url = String.format(propertiesBean.getPlaySportUrl(), 3);
-            String temp = getService.withoutParameters(url);
-            responseBean.setResult(temp);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return responseBean;
-    }
-
-    public CrawlerApiResponseBean crawlMainSpreads(Object parameter) {
-        CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
-        try {
-
-            String baseUrl = "https://www.playsport.cc/predictgame.php?allianceid=%s&gameday=%s";
-            String kind = parameter.toString().split(";")[0];
-            String day = parameter.toString().split(";")[1];
-            String url = String.format(baseUrl, kind, day);
-
-            List<String> list = stringTool.getPlaySport(url);
-            List<NbaGame> nbaGames = listObjectTool.getNbaGames(list);
-
-            List<NbaGame> spreads = nbaGames.stream().sorted(Comparator.comparing(e -> {
-                double one = Double.parseDouble(e.getBlueGuest());
-                double two = Double.parseDouble(e.getGreenGuest());
-                return -Math.abs(one - two);
-            })).collect(toList());
-
-            List<NbaGame> totals = nbaGames.stream().sorted(Comparator.comparing(e -> {
-                double one = Double.parseDouble(e.getBlueTotals());
-                double two = Double.parseDouble(e.getGreenTotals());
-                return -Math.abs(one - two);
-            })).collect(toList());
-
-
-            responseBean = objectTool.getSuccessRep();
-            responseBean.setResult(spreads);
-            responseBean.setExtraInfo(totals);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return responseBean;
-    }
+    private EnumTool enumTool;
 
     public CrawlerApiResponseBean crawlVueData() {
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
@@ -97,7 +47,8 @@ public class SportService {
             int second = str.indexOf(";", first);
             Object betGamesList = gson.fromJson(str.substring(first, second), HashMap.class).get("betGamesList");
 
-            String targetDate = stringTool.getSportDate(gamesEnum.isUsaTime());
+            LocalDate target = new LocalDate().plusDays(gamesEnum.isUsaTime() ? 1 : 0);
+            String targetDate = target.toString().substring(5).replace("-", "/") + target.dayOfWeek().getAsText().substring(2);
             Object infoList = gson.fromJson(gson.toJson(betGamesList), HashMap.class).get(targetDate);
             List list = gson.fromJson(gson.toJson(infoList), List.class);
 
@@ -125,12 +76,112 @@ public class SportService {
             responseBean = objectTool.getSuccessRep();
             responseBean.setResult(gameOddsList);
             responseBean.setExtraInfo(null);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
         return responseBean;
     }
 
+    public CrawlerApiResponseBean crawlSpreads(Object parameter) {
+        CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
+        try {
+            String baseUrl = "https://www.playsport.cc/predictgame.php?allianceid=%s&gameday=%s";
+            String kind = parameter.toString().split(";")[0];  // tomorrow
+            String day = parameter.toString().split(";")[1];   // 3(NBA)
+            String url = String.format(baseUrl, kind, day);
+            List<String> list = getPredictSpreads(url);
+            List<NbaBean> nbaBeans = getNbaBeans(list);
+
+            List<NbaBean> spreads = nbaBeans.stream().sorted(Comparator.comparing(e -> {
+                double one = Double.parseDouble(e.getBlueGuest());
+                double two = Double.parseDouble(e.getGreenGuest());
+                return -Math.abs(one - two);
+            })).collect(toList());
+
+            List<NbaBean> totals = nbaBeans.stream().sorted(Comparator.comparing(e -> {
+                double one = Double.parseDouble(e.getBlueTotals());
+                double two = Double.parseDouble(e.getGreenTotals());
+                return -Math.abs(one - two);
+            })).collect(toList());
+
+            responseBean = objectTool.getSuccessRep();
+            responseBean.setResult(spreads);
+            responseBean.setExtraInfo(totals);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return responseBean;
+    }
+
+    private List<String> getPredictSpreads(String url) {
+        List<String> list = new ArrayList<>();
+        try {
+            Document document = Jsoup.connect(url).get();
+            Elements elements = document.getElementsByClass("predictgame-table");
+            Elements trArray = elements.get(0).getElementsByTag("tr");
+            for (int i = 0 ; i < trArray.size() ; i++) {
+                if (i < 2) {
+                    continue;
+                }
+                Element trTags = trArray.get(i);
+                String team = trTags.getElementsByTag("h3").text();
+                String data = trTags.getElementsByTag("strong").text();
+                list.add(team + data);
+            }
+            list.remove("預測賽事請先登入");
+            list.removeAll(list.stream().filter(e->e.equals("")).collect(toList()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+    private List<NbaBean> getNbaBeans(List<String> list) {
+        List<NbaBean> nbaBeans = new ArrayList<>();
+        for (int i = 0; i < list.size(); i += 2) {
+            NbaBean nbaBean = new NbaBean();
+            try {
+                String guestInfo = list.get(i);
+                String hostInfo = list.get(i + 1);
+                String[] guest = guestInfo.split(" ");
+                String[] host = hostInfo.split(" ");
+                String guestTeam = guest[1].substring(0, guest[1].length() - 1);
+                String hostTeam = host[0].substring(0, host[0].length() - 1);
+                nbaBean.setGuest(guestTeam);
+                nbaBean.setHost(hostTeam);
+                if (guest[2].equals("大")) { // 主R
+                    nbaBean.setGreenGuest("+" + getValue(host[1], 2));
+                    nbaBean.setGreenHost("-" + getValue(host[1], 2));
+                    nbaBean.setGreenTotals("" + getValue(guest[3], 1));
+                    nbaBean.setBlueGuest(guest[5]);
+                    nbaBean.setBlueHost(guest[5].replace("+", "-"));
+                } else {
+                    nbaBean.setGreenGuest("-" + getValue(guest[2], 2));
+                    nbaBean.setGreenHost("+" + getValue(guest[2], 2));
+                    nbaBean.setGreenTotals("" + getValue(guest[4], 1));
+                    nbaBean.setBlueGuest(guest[6]);
+                    nbaBean.setBlueHost(guest[6].replace("-", "+"));
+                }
+                nbaBean.setBlueTotals(guest[guest.length - 1]);
+            } catch (Exception e) {
+                continue;
+            }
+            nbaBeans.add(nbaBean);
+        }
+        return nbaBeans;
+    }
+
+    private double getValue(String str, int pos) {
+        double value;
+        String temp = str.substring(0, str.length() - pos);
+        if (str.contains("贏")) {
+            value = Double.parseDouble(temp) - 0.5;
+        } else if (str.contains("輸")) {
+            value = Double.parseDouble(temp) + 0.5;
+        } else {
+            value = Double.parseDouble(str);
+        }
+        return value;
+    }
 
 }

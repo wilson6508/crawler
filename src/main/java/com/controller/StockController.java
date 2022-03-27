@@ -5,37 +5,41 @@ import com.service.stock.TwStockService;
 import com.service.stock.UsaStockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping("/stock")
 public class StockController {
 
     @Autowired
-    private TwStockService twStockService;
-    @Autowired
     private UsaStockService usaStockService;
+    @Autowired
+    private TwStockService twStockService;
 
-    @RequestMapping(value = "/crawlTwNowPrice", method = {RequestMethod.POST, RequestMethod.GET})
-    public String crawlTwNowPrice(HttpServletRequest request) {
-        CrawlerApiResponseBean responseDTO = twStockService.crawlTwNowPrice();
-        request.setAttribute("response", responseDTO);
-        return "forward:/crawlerApiResponse";
-    }
-
-    @RequestMapping(value = "/crawlTwTradeLog", method = {RequestMethod.POST, RequestMethod.GET})
-    public String crawlTwTradeLog(HttpServletRequest request) {
-        CrawlerApiResponseBean responseDTO = twStockService.crawlTwTradeLog();
-        request.setAttribute("response", responseDTO);
-        return "forward:/crawlerApiResponse";
-    }
-
-    @RequestMapping(value = "/crawlUsaTradeLog", method = {RequestMethod.POST, RequestMethod.GET})
-    public String crawlUsaTradeLog(HttpServletRequest request) {
-        CrawlerApiResponseBean responseDTO = usaStockService.crawlUsaTradeLog();
+    @RequestMapping("/stock/{action}")
+    public String stock(@PathVariable("action") String action, HttpServletRequest request) {
+        Object parameter = request.getAttribute("parameter");
+        CrawlerApiResponseBean responseDTO = null;
+        switch (action) {
+            case "crawlUsaTradeLog": {
+                responseDTO = usaStockService.crawlUsaTradeLog();
+                break;
+            }
+            case "crawlUsaPrice": {
+                responseDTO = usaStockService.crawlUsaPrice(parameter);
+                break;
+            }
+            case "crawlTwTradeLog": {
+                responseDTO = twStockService.crawlTwTradeLog();
+                break;
+            }
+            case "crawlTwPrice": {
+                responseDTO = twStockService.crawlTwPrice();
+                break;
+            }
+        }
         request.setAttribute("response", responseDTO);
         return "forward:/crawlerApiResponse";
     }

@@ -7,24 +7,24 @@ public class EnumTool {
 
     public enum ModuleType {
 
-        CRAWL_MAIN_SPREADS("crawl_main_spreads", "/sport/crawlMainSpreads", false),
-        CRAWL_VUE_DATA("crawl_vue_data", "/sport/crawlVueData", false),
+        TEST_TEST_ONE("test_test_one", "/test/testOne"),
 
-        CRAWL_TW_STOCK_NOW_PRICE("crawl_tw_stock_now_price", "/stock/crawlTwNowPrice", false),
-        CRAWL_TW_STOCK_TRADE_LOG("crawl_tw_stock_trade_log", "/stock/crawlTwTradeLog", false),
+        CRAWL_SPREADS("crawl_spreads", "/sport/crawlSpreads"),
+        CRAWL_VUE_DATA("crawl_vue_data", "/sport/crawlVueData"),
 
-        CRAWL_USA_STOCK_TRADE_LOG("crawl_usa_stock_trade_log", "/stock/crawlUsaTradeLog", false),
+        CRAWL_USA_TRADE_LOG("crawl_usa_trade_log", "/stock/crawlUsaTradeLog"),
+        CRAWL_USA_PRICE("crawl_usa_price", "/stock/crawlUsaPrice"),
+        CRAWL_TW_TRADE_LOG("crawl_tw_trade_log", "/stock/crawlTwTradeLog"),
+        CRAWL_TW_PRICE("crawl_tw_price", "/stock/crawlTwPrice"),
 
         ;
 
         private String moduleName;
         private String modulePath;
-        private boolean needLog;
 
-        ModuleType(String moduleName, String modulePath, boolean needLog) {
+        ModuleType(String moduleName, String modulePath) {
             this.moduleName = moduleName;
             this.modulePath = modulePath;
-            this.needLog = needLog;
         }
 
         public String getModuleName() {
@@ -41,14 +41,6 @@ public class EnumTool {
 
         public void setModulePath(String modulePath) {
             this.modulePath = modulePath;
-        }
-
-        public boolean isNeedLog() {
-            return needLog;
-        }
-
-        public void setNeedLog(boolean needLog) {
-            this.needLog = needLog;
         }
     }
 
@@ -115,6 +107,5 @@ public class EnumTool {
         }
         return null;
     }
-
 
 }
