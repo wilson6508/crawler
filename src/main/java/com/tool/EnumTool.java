@@ -9,13 +9,13 @@ public class EnumTool {
 
         TEST_TEST_ONE("test_test_one", "/test/testOne"),
 
-        CRAWL_SPREADS("crawl_spreads", "/sport/crawlSpreads"),
-        CRAWL_VUE_DATA("crawl_vue_data", "/sport/crawlVueData"),
+        SPORT_CRAWL_ODDS("sport_crawl_odds", "/sport/crawlOdds"),
+        SPORT_CRAWL_SPREADS("sport_crawl_spreads", "/sport/crawlSpreads"),
 
-        CRAWL_USA_TRADE_LOG("crawl_usa_trade_log", "/stock/crawlUsaTradeLog"),
-        CRAWL_USA_PRICE("crawl_usa_price", "/stock/crawlUsaPrice"),
-        CRAWL_TW_TRADE_LOG("crawl_tw_trade_log", "/stock/crawlTwTradeLog"),
-        CRAWL_TW_PRICE("crawl_tw_price", "/stock/crawlTwPrice"),
+        STOCK_CRAWL_USA_TRADE_LOG("stock_crawl_usa_trade_log", "/stock/crawlUsaTradeLog"),
+        STOCK_CRAWL_USA_PRICE("stock_crawl_usa_price", "/stock/crawlUsaPrice"),
+        STOCK_CRAWL_TW_TRADE_LOG("stock_crawl_tw_trade_log", "/stock/crawlTwTradeLog"),
+        STOCK_CRAWL_TW_PRICE("stock_crawl_tw_price", "/stock/crawlTwPrice"),
 
         ;
 

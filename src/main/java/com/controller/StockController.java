@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
+@RequestMapping("/stock")
 public class StockController {
 
     @Autowired
@@ -18,7 +19,7 @@ public class StockController {
     @Autowired
     private TwStockService twStockService;
 
-    @RequestMapping("/stock/{action}")
+    @RequestMapping("/{action}")
     public String stock(@PathVariable("action") String action, HttpServletRequest request) {
         Object parameter = request.getAttribute("parameter");
         CrawlerApiResponseBean responseDTO = null;

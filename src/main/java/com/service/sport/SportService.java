@@ -35,12 +35,12 @@ public class SportService {
     @Autowired
     private EnumTool enumTool;
 
-    public CrawlerApiResponseBean crawlVueData() {
+    public CrawlerApiResponseBean crawlOdds() {
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
         List<GameOdds> gameOddsList = new ArrayList<>();
         try {
 
-            EnumTool.GamesEnum gamesEnum = enumTool.findGamesEnum("NBA");
+            EnumTool.GamesEnum gamesEnum = enumTool.findGamesEnum("KBL");
             String url = "https://www.playsport.cc/guess/" + gamesEnum.getUrlId();
             String str = getService.withoutParameters(url);
             int first = str.indexOf("var vueData") + 14;
@@ -48,7 +48,7 @@ public class SportService {
             Object betGamesList = gson.fromJson(str.substring(first, second), HashMap.class).get("betGamesList");
 
             LocalDate target = new LocalDate().plusDays(gamesEnum.isUsaTime() ? 1 : 0);
-            String targetDate = target.toString().substring(5).replace("-", "/") + target.dayOfWeek().getAsText().substring(2);
+            String targetDate = target.toString().substring(5).replace("-", "/") + " (" + target.dayOfWeek().getAsText().substring(2) + ")";
             Object infoList = gson.fromJson(gson.toJson(betGamesList), HashMap.class).get(targetDate);
             List list = gson.fromJson(gson.toJson(infoList), List.class);
 
@@ -86,8 +86,8 @@ public class SportService {
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
         try {
             String baseUrl = "https://www.playsport.cc/predictgame.php?allianceid=%s&gameday=%s";
-            String kind = parameter.toString().split(";")[0];  // tomorrow
-            String day = parameter.toString().split(";")[1];   // 3(NBA)
+            String kind = parameter.toString().split(";")[0];  // 3(NBA)
+            String day = parameter.toString().split(";")[1];   // tomorrow
             String url = String.format(baseUrl, kind, day);
             List<String> list = getPredictSpreads(url);
             List<NbaBean> nbaBeans = getNbaBeans(list);

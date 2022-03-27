@@ -10,22 +10,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
+@RequestMapping("/sport")
 public class SportController {
 
     @Autowired
     private SportService sportService;
 
-    @RequestMapping("/sport/{action}")
+    @RequestMapping("/{action}")
     public String sport(@PathVariable("action") String action, HttpServletRequest request) {
         Object parameter = request.getAttribute("parameter");
         CrawlerApiResponseBean responseDTO = null;
         switch (action) {
-            case "crawlSpreads": {
-                responseDTO = sportService.crawlSpreads(parameter);
+            case "crawlOdds": {
+                responseDTO = sportService.crawlOdds();
                 break;
             }
-            case "crawlVueData": {
-                responseDTO = sportService.crawlVueData();
+            case "crawlSpreads": {
+                responseDTO = sportService.crawlSpreads(parameter);
                 break;
             }
         }
