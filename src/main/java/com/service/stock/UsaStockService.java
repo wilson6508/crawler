@@ -46,7 +46,7 @@ public class UsaStockService {
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
         try {
             List<UsaTradeLog> reqList = getUsaTradeLogList("C:\\Users\\hcw\\Desktop\\證券\\TD\\trade.xlsx", 0);
-            DatabaseApiResponseBean repBean = postService.databaseApi("create_usa_stock_trade_log", reqList);
+            DatabaseApiResponseBean repBean = postService.databaseApi("stock_create_usa_trade_log", reqList);
             if (repBean.getSuccess()) {
                 responseBean = objectTool.getSuccessRep();
                 responseBean.setResult("success");
