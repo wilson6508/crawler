@@ -35,19 +35,19 @@ public class SportService {
     @Autowired
     private EnumTool enumTool;
 
-    public CrawlerApiResponseBean crawlOdds() {
+    public CrawlerApiResponseBean crawlOdds(Object parameter) {
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
         List<GameOdds> gameOddsList = new ArrayList<>();
         try {
 
-            EnumTool.GamesEnum gamesEnum = enumTool.findGamesEnum("KBL");
-            String url = "https://www.playsport.cc/guess/" + gamesEnum.getUrlId();
+            HashMap<String, String> hashMap = getParameter(parameter);
+            String url = "https://www.playsport.cc/guess/" + hashMap.get("gameId");
             String str = getService.withoutParameters(url);
             int first = str.indexOf("var vueData") + 14;
             int second = str.indexOf(";", first);
             Object betGamesList = gson.fromJson(str.substring(first, second), HashMap.class).get("betGamesList");
 
-            LocalDate target = new LocalDate().plusDays(gamesEnum.isUsaTime() ? 1 : 0);
+            LocalDate target = new LocalDate().plusDays(hashMap.get("gameDay").equals("tomorrow") ? 1 : 0);
             String targetDate = target.toString().substring(5).replace("-", "/") + " (" + target.dayOfWeek().getAsText().substring(2) + ")";
             Object infoList = gson.fromJson(gson.toJson(betGamesList), HashMap.class).get(targetDate);
             List list = gson.fromJson(gson.toJson(infoList), List.class);
@@ -86,9 +86,9 @@ public class SportService {
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
         try {
             String baseUrl = "https://www.playsport.cc/predictgame.php?allianceid=%s&gameday=%s";
-            String kind = parameter.toString().split(";")[0];  // 3(NBA)
-            String day = parameter.toString().split(";")[1];   // tomorrow
-            String url = String.format(baseUrl, kind, day);
+
+            HashMap<String, String> hashMap = getParameter(parameter);
+            String url = String.format(baseUrl, hashMap.get("gameId"), hashMap.get("gameDay"));
             List<String> list = getPredictSpreads(url);
             List<NbaBean> nbaBeans = getNbaBeans(list);
 
@@ -182,6 +182,17 @@ public class SportService {
             value = Double.parseDouble(str);
         }
         return value;
+    }
+
+    private HashMap<String, String> getParameter(Object parameter) {
+        String league = parameter.toString().split(";")[0];
+        EnumTool.GamesEnum gamesEnum = enumTool.findGamesEnum(league);
+        String gameId = String.valueOf(gamesEnum.getUrlId());           // 3(NBA)
+        String gameDay = parameter.toString().split(";")[1];      // tomorrow
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("gameId", gameId);
+        hashMap.put("gameDay", gameDay);
+        return hashMap;
     }
 
 }

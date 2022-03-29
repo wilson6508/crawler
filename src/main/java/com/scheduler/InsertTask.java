@@ -23,12 +23,12 @@ public class InsertTask {
     private PostService postService;
 
     // 星期二到星期六20:55執行
-    @Scheduled(cron = "0 41 17 * * TUE-SAT")
+    @Scheduled(cron = "0 11 21 * * TUE-SAT")
     public void dailyTask() {
         List<String> stockIdList = Arrays.asList("AMAT", "QQQM", "VTI", "SPY");
         CrawlerApiResponseBean crawl = usaStockService.crawlUsaPrice(stockIdList);
         if (crawl.getSuccess()) {
-            DatabaseApiResponseBean insert = postService.databaseApi("create_usa_stock_price_log", crawl.getResult());
+            DatabaseApiResponseBean insert = postService.databaseApi("stock_create_usa_price_log", crawl.getResult());
             if (insert.getSuccess()) {
                 System.out.println("Crawl stock price of USA successfully. " + localDateTool.getCurrentTime("dayTw"));
                 return;

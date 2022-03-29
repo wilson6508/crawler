@@ -22,7 +22,7 @@ public class SportController {
         CrawlerApiResponseBean responseDTO = null;
         switch (action) {
             case "crawlOdds": {
-                responseDTO = sportService.crawlOdds();
+                responseDTO = sportService.crawlOdds(parameter);
                 break;
             }
             case "crawlSpreads": {
