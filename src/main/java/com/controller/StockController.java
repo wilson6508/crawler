@@ -36,8 +36,8 @@ public class StockController {
                 responseDTO = twStockService.crawlTwTradeLog();
                 break;
             }
-            case "crawlTwPrice": {
-                responseDTO = twStockService.crawlTwPrice();
+            case "crawlTwNameMapping": {
+                responseDTO = twStockService.crawlTwNameMapping();
                 break;
             }
         }

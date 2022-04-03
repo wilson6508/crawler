@@ -15,7 +15,7 @@ public class EnumTool {
         STOCK_CRAWL_USA_TRADE_LOG("stock_crawl_usa_trade_log", "/stock/crawlUsaTradeLog"),
         STOCK_CRAWL_USA_PRICE_LOG("stock_crawl_usa_price_log", "/stock/crawlUsaPriceLog"),
         STOCK_CRAWL_TW_TRADE_LOG("stock_crawl_tw_trade_log", "/stock/crawlTwTradeLog"),
-        STOCK_CRAWL_TW_PRICE("stock_crawl_tw_price", "/stock/crawlTwPrice"),
+        STOCK_CRAWL_TW_NAME_MAPPING("stock_crawl_tw_name_mapping", "/stock/crawlTwNameMapping"),
 
         ;
 

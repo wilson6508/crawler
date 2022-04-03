@@ -62,11 +62,11 @@ public class TwStockService {
         return responseBean;
     }
 
-    public CrawlerApiResponseBean crawlTwPrice() {
+    public CrawlerApiResponseBean crawlTwNameMapping() {
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
         try {
             String str = ioService.getDataFromExcel(8, propertiesBean.getFirstExcel());
-            DatabaseApiResponseBean repBean = postService.databaseApi("update_tw_name_mapping", gson.fromJson(str, ArrayList.class));
+            DatabaseApiResponseBean repBean = postService.databaseApi("stock_update_tw_name_mapping", gson.fromJson(str, ArrayList.class));
             if (repBean.getSuccess()) {
                 responseBean = objectTool.getSuccessRep();
                 responseBean.setResult(true);
