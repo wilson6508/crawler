@@ -28,8 +28,8 @@ public class StockController {
                 responseDTO = usaStockService.crawlUsaTradeLog();
                 break;
             }
-            case "crawlUsaPrice": {
-                responseDTO = usaStockService.crawlUsaPrice(parameter);
+            case "crawlUsaPriceLog": {
+                responseDTO = usaStockService.crawlUsaPriceLog(parameter);
                 break;
             }
             case "crawlTwTradeLog": {

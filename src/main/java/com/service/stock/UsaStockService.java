@@ -57,12 +57,14 @@ public class UsaStockService {
         return responseBean;
     }
 
-    public CrawlerApiResponseBean crawlUsaPrice(Object parameter) {
+    public CrawlerApiResponseBean crawlUsaPriceLog(Object parameter) {
 
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
         List<UsaPrice> list = new ArrayList<>();
         Type type = new TypeToken<ArrayList<String>>() {}.getType();
-        List<String> stockIdList = gson.fromJson(gson.toJson(parameter), type);
+        List<String> tempList = gson.fromJson(gson.toJson(parameter), type);
+        int plusDays = Integer.parseInt(tempList.get(0));
+        List<String> stockIdList = tempList.subList(1, tempList.size());
 
         try {
             for (String stockId : stockIdList) {
@@ -76,7 +78,7 @@ public class UsaStockService {
 
                 String originDate = tds.get(0).text();
                 String date = localDateTool.getDateByString(originDate);
-                String yesterday = new LocalDate().plusDays(-1).toString();
+                String yesterday = new LocalDate().plusDays(plusDays).toString();
                 if (date.equals(yesterday)) {
                     UsaPrice usaPrice = new UsaPrice();
                     usaPrice.setDate(date);
