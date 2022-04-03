@@ -62,9 +62,9 @@ public class UsaStockService {
         CrawlerApiResponseBean responseBean = objectTool.getErrorRep();
         List<UsaPrice> list = new ArrayList<>();
         Type type = new TypeToken<ArrayList<String>>() {}.getType();
-        List<String> tempList = gson.fromJson(gson.toJson(parameter), type);
-        int plusDays = Integer.parseInt(tempList.get(0));
-        List<String> stockIdList = tempList.subList(1, tempList.size());
+        List<String> stockIdList = gson.fromJson(gson.toJson(parameter), type);
+        String plusDays = localDateTool.getCurrentTime("dayUsShort").split(" ")[1].equals("Mon") ? "-3" : "-1";
+        String yesterday = new LocalDate().plusDays(Integer.parseInt(plusDays)).toString();
 
         try {
             for (String stockId : stockIdList) {
@@ -75,10 +75,7 @@ public class UsaStockService {
                 Elements trs = tbody.getElementsByTag("tr");
                 Element tr = trs.get(0);
                 Elements tds = tr.getElementsByTag("td");
-
-                String originDate = tds.get(0).text();
-                String date = localDateTool.getDateByString(originDate);
-                String yesterday = new LocalDate().plusDays(plusDays).toString();
+                String date = localDateTool.getDateByString(tds.get(0).text());
                 if (date.equals(yesterday)) {
                     UsaPrice usaPrice = new UsaPrice();
                     usaPrice.setDate(date);

@@ -25,8 +25,7 @@ public class InsertTask {
     // 星期二到星期六20:55執行
     @Scheduled(cron = "0 10 21 * * MON-FRI")
     public void dailyTask() {
-        String targetDay = localDateTool.getCurrentTime("dayUsShort").split(" ")[1].equals("Mon") ? "-3" : "-1";
-        List<String> stockIdList = Arrays.asList(targetDay, "AMAT", "QQQM", "VTI", "SPY");
+        List<String> stockIdList = Arrays.asList("AMAT", "QQQM", "VTI", "SPY");
         CrawlerApiResponseBean crawl = usaStockService.crawlUsaPriceLog(stockIdList);
         if (crawl.getSuccess()) {
             DatabaseApiResponseBean insert = postService.databaseApi("stock_create_usa_price_log", crawl.getResult());
