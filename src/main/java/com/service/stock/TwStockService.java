@@ -51,7 +51,7 @@ public class TwStockService {
             List<TwTradeLog> tsList = tsStockLog(tsData);
             reqList.addAll(tsList);
 
-            DatabaseApiResponseBean repBean = postService.databaseApi("create_tw_stock_trade_log", reqList);
+            DatabaseApiResponseBean repBean = postService.databaseApi("stock_create_tw_trade_log", reqList);
             if (repBean.getSuccess()) {
                 responseBean = objectTool.getSuccessRep();
                 responseBean.setResult("success");
@@ -78,7 +78,7 @@ public class TwStockService {
     }
 
     private List<TwTradeLog> skStockLog(List<String> list) {
-        DatabaseApiResponseBean repBean = postService.databaseApi("read_tw_name_mapping", null);
+        DatabaseApiResponseBean repBean = postService.databaseApi("stock_read_tw_name_mapping", null);
         Type type = new TypeToken<ArrayList<TwName>>() {
         }.getType();
         List<TwName> nameList = gson.fromJson(gson.toJson(repBean.getResult()), type);
