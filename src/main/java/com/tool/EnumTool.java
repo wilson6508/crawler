@@ -1,12 +1,15 @@
 package com.tool;
 
+import lombok.Getter;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EnumTool {
 
+    @Getter
+    @AllArgsConstructor
     public enum ModuleType {
-
         TEST_TEST_ONE("test_test_one", "/test/testOne"),
 
         SPORT_CRAWL_ODDS("sport_crawl_odds", "/sport/crawlOdds"),
@@ -14,34 +17,12 @@ public class EnumTool {
 
         STOCK_CRAWL_USA_TRADE_LOG("stock_crawl_usa_trade_log", "/stock/crawlUsaTradeLog"),
         STOCK_CRAWL_USA_PRICE_LOG("stock_crawl_usa_price_log", "/stock/crawlUsaPriceLog"),
+
         STOCK_CRAWL_TW_TRADE_LOG("stock_crawl_tw_trade_log", "/stock/crawlTwTradeLog"),
         STOCK_CRAWL_TW_NAME_MAPPING("stock_crawl_tw_name_mapping", "/stock/crawlTwNameMapping"),
-
         ;
-
         private String moduleName;
         private String modulePath;
-
-        ModuleType(String moduleName, String modulePath) {
-            this.moduleName = moduleName;
-            this.modulePath = modulePath;
-        }
-
-        public String getModuleName() {
-            return moduleName;
-        }
-
-        public void setModuleName(String moduleName) {
-            this.moduleName = moduleName;
-        }
-
-        public String getModulePath() {
-            return modulePath;
-        }
-
-        public void setModulePath(String modulePath) {
-            this.modulePath = modulePath;
-        }
     }
 
     public ModuleType findModuleType(String str) {
