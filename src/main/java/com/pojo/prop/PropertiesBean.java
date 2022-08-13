@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "crawler")
 public class PropertiesBean {
     private int timeOut;
+    private String testApi;
     private String databaseApi;
     private String readExcelApi;
     private String firstExcel;

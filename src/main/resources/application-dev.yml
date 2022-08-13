@@ -9,3 +9,11 @@ crawler:
   secondExcel: https://docs.google.com/spreadsheets/d/1fKh7U_JbHFNQxmcOb4oMg0EK997HUg1mibmtXkg9D3s/edit#gid=0
   chartsUrl: https://ycharts.com/companies/%s/%s
   playSportUrl: https://www.playsport.cc/predictgame.php?type=p&allianceid=%d&from=header
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    shutdown:
+      enabled: true

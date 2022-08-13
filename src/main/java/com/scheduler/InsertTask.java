@@ -22,12 +22,14 @@ public class InsertTask {
     @Autowired
     private PostService postService;
 
-    // 星期二到星期六20:55執行
-    @Scheduled(cron = "0 10 21 * * MON-FRI")
+    // 星期一到星期五21:10執行
+    @Scheduled(cron = "0 10 21 ? * MON-FRI")
     public void dailyTask() {
         List<String> stockIdList = Arrays.asList("AMAT", "QQQM", "VTI", "SPY");
+        // 抓取股價資訊
         CrawlerApiResponseBean crawl = usaStockService.crawlUsaPriceLog(stockIdList);
         if (crawl.getSuccess()) {
+            // 打databaseApi
             DatabaseApiResponseBean insert = postService.databaseApi("stock_create_usa_price_log", crawl.getResult());
             if (insert.getSuccess()) {
                 System.out.println("Crawl stock price of USA successfully. " + localDateTool.getCurrentTime("dayTw"));
@@ -36,11 +38,5 @@ public class InsertTask {
         }
         System.out.println("crawlUsaPrice failed " + localDateTool.getCurrentTime("dayTw"));
     }
-
-//    每個月1號20:30執行
-//    @Scheduled(cron = "0 30 20 1 * *")
-//    public void monthlyTask() {
-//        System.out.println("QQQ");
-//    }
 
 }
