@@ -14,13 +14,13 @@ public class Application {
         SpringApplication.run(Application.class, args);
     }
 
-    @Bean
-    public CommandLineRunner run() {
-        return (args -> {
-            System.out.println("666");
-            System.out.println("777");
-        });
-    }
+//    @Bean
+//    public CommandLineRunner run() {
+//        return (args -> {
+//            System.out.println("666");
+//            System.out.println("777");
+//        });
+//    }
 
 }
 
